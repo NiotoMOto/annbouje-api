@@ -11,6 +11,7 @@ const schema = new Schema({
   firstName: { type: String },
   username: { type: String },
   email: { type: String },
+  image: { type: String},
   password: { type: String, bcrypt: true },
   googleId: { type: Number },
   facebookId: { type: Number },
