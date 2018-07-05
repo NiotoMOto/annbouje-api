@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const express = require('express');
 const config = require('../../config');
 
@@ -53,7 +52,6 @@ router.post('/login/facebook', (req, res) => {
         var token = jwt.sign(payload, config.secretOrKey);
         res.json({user, token});
       }).catch((err) => {
-        console.log(err)
         res.status(500).json({ err })
       })
     } else {
