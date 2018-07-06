@@ -6,6 +6,6 @@ const Graphql = require('../../graphql/shemas/shema');
 const router = express.Router();
 
 
-router.use('/', graphqlExpress({ schema: Graphql }))
+router.use('/', graphqlExpress({ schema: Graphql,  mocks: true }))
 
 module.exports = router;
