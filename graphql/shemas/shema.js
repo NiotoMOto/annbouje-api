@@ -77,7 +77,8 @@ const resolvers = {
         )
     },
     Annonce: {
-        creator: annonce => ( User.findById(annonce.creator).then(user => user) )
+        creator: annonce => ( User.findById(annonce.creator).then(user => user) ),
+        sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport ))
     },
 
     InstanceAnnonce: {
