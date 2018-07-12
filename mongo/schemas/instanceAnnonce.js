@@ -8,6 +8,9 @@ const schema = new Schema({
     date: { type: Date },
     annonce: { type: Schema.Types.ObjectId, ref: ShemaNames.ANNONCES },
     subscribers: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
+    address: { type: String },
+    city: { type: String },
+    position: [{ type: Number, }]
 },
 {
     timestamps: true

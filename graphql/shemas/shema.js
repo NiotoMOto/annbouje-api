@@ -16,6 +16,7 @@ const typeDefs = `
         users: [User],
         sports: [Sport],
         annonces: [Annonce],
+        annonceById(id: String): Annonce,
         instanceAnnonces(annonce: String): [InstanceAnnonce]
     }
 
@@ -29,6 +30,7 @@ const typeDefs = `
         name: String, 
         creator: User,
         sport: Sport,
+        instanceAnnonces: [InstanceAnnonce]
     }
 
     type User {
@@ -44,6 +46,7 @@ const typeDefs = `
 
     type InstanceAnnonce {
         date: Date,
+        places: Int,
         annonce: Annonce,
         subscribers: [User]
     }
@@ -70,15 +73,20 @@ const resolvers = {
         users: () => User.find({}).then((users) => users),
         sports: () => Sport.find({}).then((sports) => sports),
         annonces: () => Annonce.find({}).then(annonces => annonces),
-        instanceAnnonces: (_, {annonce}) => (
-           InstanceAnnonce.find({ annonce }).then(InstanceAnnonces => {
-            return InstanceAnnonces;
+        annonceById: (_, { id }) => Annonce.findById(id).then(annonce => annonce),
+        instanceAnnonces: (_, { annonce }) => (
+           InstanceAnnonce.find({ annonce }).then(instanceAnnonces => {
+            return instanceAnnonces;
            })
         )
     },
     Annonce: {
         creator: annonce => ( User.findById(annonce.creator).then(user => user) ),
-        sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport ))
+        sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport )),
+        instanceAnnonces: annonce => ( InstanceAnnonce.find({ annonce: annonce._id }).then(instanceAnnonces => {
+            return instanceAnnonces;
+           })
+        )
     },
 
     InstanceAnnonce: {

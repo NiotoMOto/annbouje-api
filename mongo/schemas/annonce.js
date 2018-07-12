@@ -9,7 +9,8 @@ const schema = new Schema({
     creator: { type: Schema.Types.ObjectId, ref: ShemaNames.USER },
     admins: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
     users: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
-    sport: { type: Schema.Types.ObjectId, ref: ShemaNames.SPORT }
+    sport: { type: Schema.Types.ObjectId, ref: ShemaNames.SPORT },
+    defaultPlace: { type: String }
 },
 {
     timestamps: true

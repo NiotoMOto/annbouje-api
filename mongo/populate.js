@@ -61,17 +61,17 @@ function populate(next) {
                 sports: _.takeRight(sports, 3)
             }),
             Users.create({
-                lastName: 'Godon',
-                firstName: 'Nicolas',
-                username: 'El bambino',
+                lastName: 'Michelle',
+                firstName: 'Biza',
+                username: 'El rojo',
                 password: 'toto',
                 email: 'fwadlaire@gmail.com',
                 sports: _.takeRight(sports, 3)
             }),
             Users.create({
-                lastName: 'Godon',
-                firstName: 'Nicolas',
-                username: 'El bambino',
+                lastName: 'Antoine',
+                firstName: 'Antoine',
+                username: 'Tonio',
                 password: 'toto',
                 email: 'fwadlaire@gmail.com',
                 sports: _.takeRight(sports, 3)
@@ -92,9 +92,9 @@ function populate(next) {
         }).then(annonces => {
             return Promise.all(annonces.map(annonce => (
                 [
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: allusers, nbPlaces: 10 }),
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 2), nbPlaces: 10 }),
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 4), nbPlaces: 10 })
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: allusers, places: 10 }),
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10 }),
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10 })
                 ]
             )))
         })
