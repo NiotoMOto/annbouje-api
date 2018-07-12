@@ -2,16 +2,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const methodOverride = require('method-override');
-const mongoose = require('mongoose');
+const { graphiqlExpress } = require('apollo-server-express');
 const cors = require('cors');
 const app = express();
-
 const config = require('./config')
 const apiRoutes = require('./routes/api');
+const graphRoutes = require('./routes/graphql');
 const publicRoutes = require('./routes/public');
 const passport = require('./services/passport');
 
-const User = require('mongoose').model('Users');
 
 const populateDatabase = require('./mongo/populate.js');
 
@@ -48,6 +47,9 @@ app.use(cors(corsOptions));
 
 app.use(apiRoutes);
 app.use(publicRoutes);
+app.use('/graphql', graphRoutes);
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+
 
 app.listen(config.port, function () {
   console.log(`Serveur mise en route sur le port ${config.port}`);

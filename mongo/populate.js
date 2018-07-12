@@ -6,8 +6,10 @@ const _ = require('lodash');
 const Users = require('./schemas/user').model;
 const Annonces = require('./schemas/annonce').model;
 const Sports = require('./schemas/sport').model;
+const InstanceAnnonce = require('./schemas/instanceAnnonce').model;
 
 let sports = [];
+let allusers = [];
 function populate(next) {
     Promise.all([
         Users.remove({}),
@@ -50,9 +52,34 @@ function populate(next) {
                 email: 'fwadlaire@gmail.com',
                 sports: _.takeRight(sports, 3)
             }),
+            Users.create({
+                lastName: 'Sanchez',
+                firstName: 'Julien',
+                username: 'El matador',
+                password: 'toto',
+                email: 'fwadlaire@gmail.com',
+                sports: _.takeRight(sports, 3)
+            }),
+            Users.create({
+                lastName: 'Michelle',
+                firstName: 'Biza',
+                username: 'El rojo',
+                password: 'toto',
+                email: 'fwadlaire@gmail.com',
+                sports: _.takeRight(sports, 3)
+            }),
+            Users.create({
+                lastName: 'Antoine',
+                firstName: 'Antoine',
+                username: 'Tonio',
+                password: 'toto',
+                email: 'fwadlaire@gmail.com',
+                sports: _.takeRight(sports, 3)
+            })
         ]).then(users => {
+            allusers = users;
             return Promise.all([
-                Annonces.create({ name: 'Foot st-ouen', creator: users[0], sport: sports[1]._id }),
+                Annonces.create({ name: 'Foot st-ouensss', creator: users[5], sport: sports[1]._id, admin: [users[0]] }),
                 Annonces.create({ name: 'Foot Paris 8eme', creator: users[1], sport: sports[1] }),
                 Annonces.create({ name: 'Foot Lorient', creator: users[1], sport: sports[1] }),
                 Annonces.create({ name: 'Course a pied Poissy', creator: users[0], sport: sports[0] }),
@@ -62,6 +89,14 @@ function populate(next) {
                 Annonces.create({ name: 'Basket-ball Poissy', creator: users[1], sport: sports[3] }),
                 Annonces.create({ name: 'Urban foot Clohar-carnoë', creator: users[1], sport: sports[2] }),
             ]);
+        }).then(annonces => {
+            return Promise.all(annonces.map(annonce => (
+                [
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: allusers, places: 10 }),
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10 }),
+                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10 })
+                ]
+            )))
         })
     });
 };
