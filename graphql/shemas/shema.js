@@ -11,6 +11,11 @@ const InstanceAnnonce = mongoose.model('InstanceAnnonces');
 
 const typeDefs = `
     scalar Date
+    input AnnonceInput {
+        name: String, 
+        creator: String,
+        sport: String,
+    }
 
     type Query {
         users: [User],
@@ -18,6 +23,10 @@ const typeDefs = `
         annonces: [Annonce],
         annonceById(id: String): Annonce,
         instanceAnnonces(annonce: String): [InstanceAnnonce]
+    }
+
+    type Mutation {
+        addAnnonce(annonce: AnnonceInput): Annonce
     }
 
     type Sport {
@@ -78,6 +87,11 @@ const resolvers = {
            InstanceAnnonce.find({ annonce }).then(instanceAnnonces => {
             return instanceAnnonces;
            })
+        )
+    },
+    Mutation: {
+        addAnnonce: (root, { annonce }) => (
+            Annonce.create(annonce).then(annonce => annonce)
         )
     },
     Annonce: {
