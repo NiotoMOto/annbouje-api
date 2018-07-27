@@ -5,12 +5,16 @@ const Schema = mongoose.Schema;
 
 
 const schema = new Schema({
-    name: { type: String }, 
+    date: { type: Date },
+    name: { type: String },
     creator: { type: Schema.Types.ObjectId, ref: ShemaNames.USER },
-    admins: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
-    users: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
+    group: { type: Schema.Types.ObjectId, ref: ShemaNames.GROUP },
     sport: { type: Schema.Types.ObjectId, ref: ShemaNames.SPORT },
-    defaultPlace: { type: String }
+    subscribers: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
+    address: { type: String },
+    city: { type: String },
+    places: { type: Number },
+    position: [{ type: Number, }]
 },
 {
     timestamps: true
@@ -18,6 +22,6 @@ const schema = new Schema({
 
 module.exports = {
     private: false,
-    model: mongoose.model(ShemaNames.ANNONCES, schema),
+    model: mongoose.model(ShemaNames.ANNONCE, schema),
   };
   
