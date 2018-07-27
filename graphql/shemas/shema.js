@@ -11,7 +11,7 @@ const Annonce = mongoose.model('Annonces');
 
 const typeDefs = `
     scalar Date
-    input GroupInput {
+    input AnnonceInput {
         name: String, 
         creator: String,
         sport: String,
@@ -28,7 +28,7 @@ const typeDefs = `
     }
 
     type Mutation {
-        addGroup(annonce: GroupInput): Group
+        addAnnonce(annonce: AnnonceInput): Group
     }
 
     type Sport { 
@@ -103,8 +103,8 @@ const resolvers = {
         )
     },
     Mutation: {
-        addGroup: (root, { group }) => (
-            Annonce.create(group).then(group => group)
+        addAnnonce: (root, { annonce }) => (
+            Annonce.create(annonce).then(annonce => annonce)
         )
     },
     Group: {
