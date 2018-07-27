@@ -4,17 +4,18 @@ const Promise = require('bluebird');
 const fs = require('fs');
 const _ = require('lodash');
 const Users = require('./schemas/user').model;
-const Annonces = require('./schemas/annonce').model;
+const Group = require('./schemas/group').model;
 const Sports = require('./schemas/sport').model;
-const InstanceAnnonce = require('./schemas/instanceAnnonce').model;
+const Annonce = require('./schemas/annonce').model;
 
 let sports = [];
 let allusers = [];
 function populate(next) {
     Promise.all([
         Users.remove({}),
-        Annonces.remove({}),
-        Sports.remove({})
+        Group.remove({}),
+        Sports.remove({}),
+        Annonce.remove({})
     ]).then(() => {
         return Promise.all([
             Sports.create({ key: 'COURSE_PIED', name: 'Course à pied'}),
@@ -79,22 +80,22 @@ function populate(next) {
         ]).then(users => {
             allusers = users;
             return Promise.all([
-                Annonces.create({ name: 'Foot st-ouensss', creator: users[5], sport: sports[1]._id, admin: [users[0]] }),
-                Annonces.create({ name: 'Foot Paris 8eme', creator: users[1], sport: sports[1] }),
-                Annonces.create({ name: 'Foot Lorient', creator: users[1], sport: sports[1] }),
-                Annonces.create({ name: 'Course a pied Poissy', creator: users[0], sport: sports[0] }),
-                Annonces.create({ name: 'Course a pied Plaisir', creator: users[0], sport: sports[0] }),
-                Annonces.create({ name: 'Course a pied Nice', creator: users[2], sport: sports[0] }),
-                Annonces.create({ name: 'Course a pied Montargis', creator: users[2], sport: sports[0] }),
-                Annonces.create({ name: 'Basket-ball Poissy', creator: users[1], sport: sports[3] }),
-                Annonces.create({ name: 'Urban foot Clohar-carnoë', creator: users[1], sport: sports[2] }),
+                Group.create({ name: 'Foot st-ouensss', creator: users[5], sport: sports[1]._id, admin: [users[0]] }),
+                Group.create({ name: 'Foot Paris 8eme', creator: users[1], sport: sports[1] }),
+                Group.create({ name: 'Foot Lorient', creator: users[1], sport: sports[1] }),
+                Group.create({ name: 'Course a pied Poissy', creator: users[0], sport: sports[0] }),
+                Group.create({ name: 'Course a pied Plaisir', creator: users[0], sport: sports[0] }),
+                Group.create({ name: 'Course a pied Nice', creator: users[2], sport: sports[0] }),
+                Group.create({ name: 'Course a pied Montargis', creator: users[2], sport: sports[0] }),
+                Group.create({ name: 'Basket-ball Poissy', creator: users[1], sport: sports[3] }),
+                Group.create({ name: 'Urban foot Clohar-carnoë', creator: users[1], sport: sports[2] }),
             ]);
-        }).then(annonces => {
-            return Promise.all(annonces.map(annonce => (
+        }).then(groups => {
+            return Promise.all(groups.map(group => (
                 [
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: allusers, places: 10 }),
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10 }),
-                    InstanceAnnonce.create({ annonce: annonce._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10 })
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: allusers, places: 10, creator: group.creator, sport: group.sport, name: group.name }),
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10, creator: group.creator, sport: group.sport, name: group.name }),
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10, creator: group.creator, sport: group.sport, name: group.name })
                 ]
             )))
         })

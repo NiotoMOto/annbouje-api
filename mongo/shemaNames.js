@@ -1,6 +1,6 @@
 module.exports = {
     USER: 'Users',
-    ANNONCES: 'Annonces',
+    ANNONCE: 'Annonces',
     SPORT: 'Sports',
-    INSTANCE_ANNONCE: 'InstanceAnnonces',
+    GROUP: 'Groups',
 }
