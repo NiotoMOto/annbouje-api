@@ -5,32 +5,43 @@ const mongoose = require('mongoose');
 
 const User = mongoose.model('Users');
 const Sport = mongoose.model('Sports');
+const Group = mongoose.model('Groups');
 const Annonce = mongoose.model('Annonces');
-const InstanceAnnonce = mongoose.model('InstanceAnnonces');
 
 
 const typeDefs = `
     scalar Date
+    input GroupInput {
+        name: String, 
+        creator: String,
+        sport: String,
+    }
 
     type Query {
         users: [User],
         sports: [Sport],
-        annonces: [Annonce],
-        annonceById(id: String): Annonce,
-        instanceAnnonces(annonce: String): [InstanceAnnonce]
+        groups: [Group],
+        groupsById(id: String): Group,
+        annoncesByGroup(group: String): [Annonce],
+        annonces: [Annonce]
+        annonce(id: String): Annonce
     }
 
-    type Sport {
+    type Mutation {
+        addGroup(annonce: GroupInput): Group
+    }
+
+    type Sport { 
         name: String,
         key: String,
     }
 
-    type Annonce {
+    type Group {
         _id: String,
         name: String, 
         creator: User,
         sport: Sport,
-        instanceAnnonces: [InstanceAnnonce]
+        annonces: [Annonce]
     }
 
     type User {
@@ -44,10 +55,14 @@ const typeDefs = `
         sports: [Sport],
     }
 
-    type InstanceAnnonce {
+    type Annonce {
+        _id: String
         date: Date,
         places: Int,
-        annonce: Annonce,
+        name:  String,
+        sport: Sport,
+        creator: User,
+        group: Group,
         subscribers: [User]
     }
 `;
@@ -72,28 +87,42 @@ const resolvers = {
     Query: {
         users: () => User.find({}).then((users) => users),
         sports: () => Sport.find({}).then((sports) => sports),
-        annonces: () => Annonce.find({}).then(annonces => annonces),
-        annonceById: (_, { id }) => Annonce.findById(id).then(annonce => annonce),
-        instanceAnnonces: (_, { annonce }) => (
-           InstanceAnnonce.find({ annonce }).then(instanceAnnonces => {
-            return instanceAnnonces;
+        groups: () => Groups.find({}).then(groups => groups),
+        groupsById: (_, { id }) => Annonce.findById(id).then(groups => groups),
+        annoncesByGroup: (_, { group }) => (
+           Annonce.find({ group }).then(annonces => {
+            return annonces;
            })
+        ),
+        annonces: () => Annonce.find({}).then(annonces => annonces),
+        annonce: (_, { id }) => (
+            Annonce.findById(id)
+                .then(Annonce => {
+                return Annonce
+            })
         )
     },
-    Annonce: {
-        creator: annonce => ( User.findById(annonce.creator).then(user => user) ),
-        sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport )),
-        instanceAnnonces: annonce => ( InstanceAnnonce.find({ annonce: annonce._id }).then(instanceAnnonces => {
-            return instanceAnnonces;
+    Mutation: {
+        addGroup: (root, { group }) => (
+            Annonce.create(group).then(group => group)
+        )
+    },
+    Group: {
+        creator: group => ( User.findById(group.creator).then(user => user) ),
+        sport: group => ( Sport.findById(group.sport).then(sport => sport )),
+        annonces: group => ( Annonce.find({ annonce: group._id }).then(annonces => {
+            return annonces;
            })
         )
     },
 
-    InstanceAnnonce: {
-      annonce: instanceAnnonce => ( Annonce.findById(instanceAnnonce.annonce).then(annonce => annonce) ),
-      subscribers: instanceAnnonce => (
+    Annonce: {
+      creator: annonce => ( User.findById(annonce.creator).then(user => user) ),
+      sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport )),
+      group: annonce => ( Group.findById(annonce.group).then(group => group) ),
+      subscribers: Annonce => (
         Promise.all(
-          instanceAnnonce.subscribers.map(user => User.findById(user))
+          Annonce.subscribers.map(user => User.findById(user))
         ).then(users => ( users ))
       )
     }
