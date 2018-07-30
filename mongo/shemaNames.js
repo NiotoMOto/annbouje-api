@@ -3,4 +3,5 @@ module.exports = {
     ANNONCE: 'Annonces',
     SPORT: 'Sports',
     GROUP: 'Groups',
+    ADDRESS: 'Addresses'
 }

@@ -7,6 +7,7 @@ const User = mongoose.model('Users');
 const Sport = mongoose.model('Sports');
 const Group = mongoose.model('Groups');
 const Annonce = mongoose.model('Annonces');
+const Address = mongoose.model('Addresses');
 
 
 const typeDefs = `
@@ -15,6 +16,19 @@ const typeDefs = `
         name: String, 
         creator: String,
         sport: String,
+        date: Date
+    }
+
+    input AddressInput {
+        postalCode: String,
+        latitude: Float,
+        longitude: Float,
+        country: String,
+        locality: String,
+        streetNumber: String,
+        route: String,
+        addressName: String,
+        placeId: String
     }
 
     type Query {
@@ -25,10 +39,21 @@ const typeDefs = `
         annoncesByGroup(group: String): [Annonce],
         annonces: [Annonce]
         annonce(id: String): Annonce
+        searchUser(userContain: String): [User]
+    }
+
+    type Address {
+        postalCode: String,
+        latitude: Float,
+        longitude: Float,
+        country: String,
+        locality: String,
+        streetNumber: String,
+        route: String,
     }
 
     type Mutation {
-        addAnnonce(annonce: AnnonceInput): Group
+        addAnnonce(annonce: AnnonceInput, address: AddressInput): Group
     }
 
     type Sport { 
@@ -45,6 +70,7 @@ const typeDefs = `
     }
 
     type User {
+        _id: String,
         lastName: String,
         firstName: String,
         username: String
@@ -53,17 +79,20 @@ const typeDefs = `
         googleId: Int,
         facebookId: Int,
         sports: [Sport],
+        image: String,
     }
 
     type Annonce {
-        _id: String
+        _id: String,
         date: Date,
         places: Int,
         name:  String,
         sport: Sport,
         creator: User,
         group: Group,
-        subscribers: [User]
+        subscribers: [User],
+        placeId: String,
+        address: Address
     }
 `;
 
@@ -100,12 +129,36 @@ const resolvers = {
                 .then(Annonce => {
                 return Annonce
             })
-        )
+        ),
+        searchUser: (_, { userContain }) => {
+            const searchRegex = new RegExp(`^${userContain}`, 'i')
+            return User.find({$or: [
+                { 'lastName': searchRegex },
+                { 'username': searchRegex },
+                { 'firstName': searchRegex }
+            ]})
+        }
     },
     Mutation: {
-        addAnnonce: (root, { annonce }) => (
-            Annonce.create(annonce).then(annonce => annonce)
-        )
+        addAnnonce: (root, { annonce, address }) => {
+            if (address) {
+                return Address.findOne( { placeId : address.placeId } ).then(result => {
+                    console.log('result', result);
+                    if (result) {
+                        return result._id;
+                    } else {
+                        return Address.create(address).then(address => {
+                            console.log('create', address);
+                            return address._id;
+                        })
+                    }
+                }).then(addressId => (
+                    Annonce.create({...annonce, address: addressId }).then(annonce => annonce)        
+                ))
+            } else {
+                return Annonce.create(annonce).then(annonce => annonce)
+            }
+        }
     },
     Group: {
         creator: group => ( User.findById(group.creator).then(user => user) ),
@@ -120,6 +173,7 @@ const resolvers = {
       creator: annonce => ( User.findById(annonce.creator).then(user => user) ),
       sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport )),
       group: annonce => ( Group.findById(annonce.group).then(group => group) ),
+      address: annonce => ( Address.findById(annonce.address).then(address => address) ),
       subscribers: Annonce => (
         Promise.all(
           Annonce.subscribers.map(user => User.findById(user))

@@ -10,6 +10,7 @@ const schema = new Schema({
     creator: { type: Schema.Types.ObjectId, ref: ShemaNames.USER },
     group: { type: Schema.Types.ObjectId, ref: ShemaNames.GROUP },
     sport: { type: Schema.Types.ObjectId, ref: ShemaNames.SPORT },
+    address: { type: Schema.Types.ObjectId, ref: ShemaNames.ADDRESS },
     subscribers: [{ type: Schema.Types.ObjectId, ref: ShemaNames.USER }],
     address: { type: String },
     city: { type: String },
