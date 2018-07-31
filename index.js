@@ -26,7 +26,7 @@ var corsOptions = {
   credentials: true
 }
 
-populateDatabase();
+
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -49,6 +49,7 @@ app.use(apiRoutes);
 app.use(publicRoutes);
 app.use('/graphql', graphRoutes);
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+app.use('/populate', populateDatabase);
 
 
 app.listen(config.port, function () {

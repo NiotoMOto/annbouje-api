@@ -7,16 +7,30 @@ const Users = require('./schemas/user').model;
 const Group = require('./schemas/group').model;
 const Sports = require('./schemas/sport').model;
 const Annonce = require('./schemas/annonce').model;
+const Addresse = require('./schemas/address').model;
 
 let sports = [];
 let allusers = [];
+let address = null;
 function populate(next) {
     Promise.all([
         Users.remove({}),
         Group.remove({}),
         Sports.remove({}),
-        Annonce.remove({})
-    ]).then(() => {
+        Annonce.remove({}),
+        Addresse.remove({}),
+    ]).then(() => (
+        Addresse.create({
+            postalCode: "78300",
+            latitude: 48.933873,
+            longitude: 2.04636789999995,
+            country: "France",
+            locality: "Poissy",
+            streetNumber: "25",
+            route:"Boulevard de la Paix"
+        })
+    )).then((newAddress) => {
+        address = newAddress
         return Promise.all([
             Sports.create({ key: 'COURSE_PIED', name: 'Course à pied'}),
             Sports.create({ key: 'FOOT', name: 'Football'}),
@@ -93,9 +107,9 @@ function populate(next) {
         }).then(groups => {
             return Promise.all(groups.map(group => (
                 [
-                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: allusers, places: 10, creator: group.creator, sport: group.sport, name: group.name }),
-                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10, creator: group.creator, sport: group.sport, name: group.name }),
-                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10, creator: group.creator, sport: group.sport, name: group.name })
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: allusers, places: 10, creator: group.creator, sport: group.sport, name: group.name, address: address._id }),
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 2), places: 10, creator: group.creator, sport: group.sport, name: group.name, address: address._id }),
+                    Annonce.create({ annonce: group._id, date: new Date(), subscribers: _.take(allusers, 4), places: 10, creator: group.creator, sport: group.sport, name: group.name, address: address._id })
                 ]
             )))
         })

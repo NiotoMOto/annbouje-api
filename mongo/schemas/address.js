@@ -10,6 +10,7 @@ const schema = new Schema({
   locality: { type: String },
   streetNumber: { type: String },
   route: { type: String },
+  placeId: { type: String }
 });
 
 module.exports = {
