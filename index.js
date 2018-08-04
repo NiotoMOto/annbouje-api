@@ -49,7 +49,11 @@ app.use(apiRoutes);
 app.use(publicRoutes);
 app.use('/graphql', graphRoutes);
 app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
-app.use('/populate', populateDatabase);
+app.use('/populate', (req, res) => {
+  populateDatabase().then((data) => {
+    res.json({ message: 'ok', data })
+  });
+});
 
 
 app.listen(config.port, function () {

@@ -13,7 +13,7 @@ let sports = [];
 let allusers = [];
 let address = null;
 function populate(next) {
-    Promise.all([
+    return Promise.all([
         Users.remove({}),
         Group.remove({}),
         Sports.remove({}),

@@ -16,7 +16,8 @@ const typeDefs = `
         name: String, 
         creator: String,
         sport: String,
-        date: Date
+        date: Date,
+        places: Int
     }
 
     input AddressInput {
@@ -143,7 +144,6 @@ const resolvers = {
         addAnnonce: (root, { annonce, address }) => {
             if (address) {
                 return Address.findOne( { placeId : address.placeId } ).then(result => {
-                    console.log('result', result);
                     if (result) {
                         return result._id;
                     } else {
