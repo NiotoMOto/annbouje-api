@@ -21,6 +21,12 @@ const schema = new Schema({
     timestamps: true
 });
 
+schema.methods.subscribe = function (userId) {
+    console.log('subscribers', this._id )
+    this.subscribers.push(userId);
+    return this.save();
+}
+
 module.exports = {
     private: false,
     model: mongoose.model(ShemaNames.ANNONCE, schema),

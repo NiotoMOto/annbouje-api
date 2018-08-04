@@ -20,6 +20,11 @@ const typeDefs = `
         places: Int
     }
 
+    input SubscribeInput {
+        userId: String,
+        annonceId: String,
+    }
+
     input AddressInput {
         postalCode: String,
         latitude: Float,
@@ -55,6 +60,7 @@ const typeDefs = `
 
     type Mutation {
         addAnnonce(annonce: AnnonceInput, address: AddressInput): Group
+        subscribe(subscribe: SubscribeInput): Annonce
     }
 
     type Sport { 
@@ -158,13 +164,20 @@ const resolvers = {
             } else {
                 return Annonce.create(annonce).then(annonce => annonce)
             }
+        },
+        subscribe: async (root, { subscribe: { userId, annonceId } }) => {
+            await Annonce.update(
+                { _id: annonceId },
+                { $push: { subscribers: userId } }
+            );
+            return Annonce.findById(annonceId);
         }
     },
     Group: {
         creator: group => ( User.findById(group.creator).then(user => user) ),
         sport: group => ( Sport.findById(group.sport).then(sport => sport )),
         annonces: group => ( Annonce.find({ annonce: group._id }).then(annonces => {
-            return annonces;
+            return annonces; 
            })
         )
     },
@@ -174,11 +187,12 @@ const resolvers = {
       sport: annonce => ( Sport.findById(annonce.sport).then(sport => sport )),
       group: annonce => ( Group.findById(annonce.group).then(group => group) ),
       address: annonce => ( Address.findById(annonce.address).then(address => address) ),
-      subscribers: Annonce => (
-        Promise.all(
-          Annonce.subscribers.map(user => User.findById(user))
-        ).then(users => ( users ))
-      )
+      subscribers: annonce => {
+        console.log(annonce)
+        return Promise.all(
+            annonce.subscribers.map(user => User.findById(user))
+        ).then(users => ( users ));
+      }
     }
 }
 
