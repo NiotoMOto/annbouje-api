@@ -46,6 +46,7 @@ const typeDefs = `
         annonces: [Annonce]
         annonce(id: String): Annonce
         searchUser(userContain: String): [User]
+        searchSport(sportContain: String): [Sport],
     }
 
     type Address {
@@ -64,6 +65,7 @@ const typeDefs = `
     }
 
     type Sport { 
+        _id: String,
         name: String,
         key: String,
     }
@@ -137,6 +139,10 @@ const resolvers = {
                 return Annonce
             })
         ),
+        searchSport: (_, { sportContain }) => {
+            const searchRegex = new RegExp(`^${sportContain}`, 'i')
+            return Sport.find({ name: searchRegex });
+        },
         searchUser: (_, { userContain }) => {
             const searchRegex = new RegExp(`^${userContain}`, 'i')
             return User.find({$or: [
